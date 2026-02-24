@@ -18,16 +18,39 @@ FRESH_USER = os.getenv("FRESH_USER")
 FRESH_PASS = os.getenv("FRESH_PASS")
 HEADLESS = os.getenv("HEADLESS", "false").lower() == "true"
 IS_CODESPACE = os.getenv("CODESPACES", "false").lower() == "true"
+GOOGLE_CREDENTIALS_JSON = os.getenv("GOOGLE_SHEETS_CREDENTIALS") # String JSON direta
 
 if IS_CODESPACE:
-    HEADLESS = True  # Codespace sempre roda headless por padrão no backend
+    HEADLESS = True
 
 # ==============================
 # CONFIGURAÇÃO E CREDENCIAIS
 # ==============================
 
-SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
-creds = Credentials.from_service_account_file("credenciais.json", scopes=SCOPES)
+SCOPES = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
+
+def obter_credenciais():
+    """Tenta carregar credenciais de arquivo ou variável de ambiente."""
+    # 1. Tenta por variável de ambiente (ideal para Nuvem/GitHub)
+    if GOOGLE_CREDENTIALS_JSON:
+        try:
+            import json
+            info = json.loads(GOOGLE_CREDENTIALS_JSON)
+            return Credentials.from_service_account_info(info, scopes=SCOPES)
+        except Exception as e:
+            print(f"⚠️ Erro ao ler GOOGLE_SHEETS_CREDENTIALS da env: {e}")
+
+    # 2. Tenta por arquivo local (ideal para PC)
+    if os.path.exists("credenciais.json"):
+        return Credentials.from_service_account_file("credenciais.json", scopes=SCOPES)
+    
+    return None
+
+creds = obter_credenciais()
+if not creds:
+    print("❌ ERRO: Credenciais do Google não encontradas (arquivo ou variável)!")
+    sys.exit(1)
+
 client = gspread.authorize(creds)
 
 SHEET_URL = "https://docs.google.com/spreadsheets/d/1ukIGDUSIobMlI-nLRjmBdLIt9ftWkncW4_Xl6u5SdpA"
