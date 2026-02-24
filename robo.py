@@ -6,7 +6,6 @@ import time
 import re
 import sys
 import os
-import pickle
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -17,38 +16,16 @@ from selenium.webdriver.common.keys import Keys
 FRESH_USER = os.getenv("FRESH_USER")
 FRESH_PASS = os.getenv("FRESH_PASS")
 # No Codespaces, se o usuário não disser nada, tentamos Headless (modo servidor)
+# Mas se quiser VER a tela no VNC, basta rodar: export HEADLESS='false'
 HEADLESS = os.getenv("HEADLESS", "true").lower() == "true"
 IS_CODESPACE = os.getenv("CODESPACES", "false").lower() == "true"
-GOOGLE_CREDENTIALS_JSON = os.getenv("GOOGLE_SHEETS_CREDENTIALS") # String JSON direta
 
 # ==============================
 # CONFIGURAÇÃO E CREDENCIAIS
 # ==============================
 
-SCOPES = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
-
-def obter_credenciais():
-    """Tenta carregar credenciais de arquivo ou variável de ambiente."""
-    # 1. Tenta por variável de ambiente (ideal para Nuvem/GitHub)
-    if GOOGLE_CREDENTIALS_JSON:
-        try:
-            import json
-            info = json.loads(GOOGLE_CREDENTIALS_JSON)
-            return Credentials.from_service_account_info(info, scopes=SCOPES)
-        except Exception as e:
-            print(f"⚠️ Erro ao ler GOOGLE_SHEETS_CREDENTIALS da env: {e}")
-
-    # 2. Tenta por arquivo local (ideal para PC)
-    if os.path.exists("credenciais.json"):
-        return Credentials.from_service_account_file("credenciais.json", scopes=SCOPES)
-    
-    return None
-
-creds = obter_credenciais()
-if not creds:
-    print("❌ ERRO: Credenciais do Google não encontradas (arquivo ou variável)!")
-    sys.exit(1)
-
+SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
+creds = Credentials.from_service_account_file("credenciais.json", scopes=SCOPES)
 client = gspread.authorize(creds)
 
 SHEET_URL = "https://docs.google.com/spreadsheets/d/1ukIGDUSIobMlI-nLRjmBdLIt9ftWkncW4_Xl6u5SdpA"
@@ -85,14 +62,18 @@ def normalizar(texto):
 options = webdriver.ChromeOptions()
 
 if HEADLESS:
-    print("🌐 Iniciando em modo Headless...")
+    print("🌐 Iniciando em modo Headless (Sem Janela)...")
     options.add_argument("--headless=new")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--window-size=1920,1080")
 else:
-    options.add_argument(r"--user-data-dir=C:\robo\profile")
+    print("🖥️ Iniciando em modo com Janela (Visual)...")
+    if not IS_CODESPACE:
+        options.add_argument(r"--user-data-dir=C:\robo\profile")
     options.add_argument("--start-maximized")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
 
 # Opções extras de estabilidade
 options.add_argument("--remote-debugging-port=9222")
@@ -103,34 +84,6 @@ wait = WebDriverWait(driver, 20)
 # ==============================
 # "BYPASS" HELPERS (Pula Selenium find_element que crasha)
 # ==============================
-
-def salvar_cookies():
-    """Salva os cookies atuais em um arquivo para reutilização."""
-    try:
-        with open("cookies.pkl", "wb") as f:
-            pickle.dump(driver.get_cookies(), f)
-        print("✅ Sessão salva em cookies.pkl!")
-    except Exception as e:
-        print(f"❌ Erro ao salvar cookies: {e}")
-
-def carregar_cookies():
-    """Tenta carregar cookies salvos para pular o login."""
-    if not os.path.exists("cookies.pkl"):
-        return False
-    try:
-        driver.get("https://grupofleury.freshservice.com/login")
-        time.sleep(2)
-        with open("cookies.pkl", "rb") as f:
-            cookies = pickle.load(f)
-            for cookie in cookies:
-                driver.add_cookie(cookie)
-        print("🍪 Cookies carregados. Tentando pular login...")
-        driver.refresh()
-        time.sleep(5)
-        return "dashboard" in driver.current_url.lower() or "tickets" in driver.current_url.lower()
-    except Exception as e:
-        print(f"❌ Erro ao carregar cookies: {e}")
-        return False
 
 def fazer_login():
     """Realiza o login automático no Freshservice."""
@@ -457,26 +410,15 @@ def fase_c_reforco(ticket_id):
 # ==============================
 
 def main():
-    # 1. Tenta carregar sessão salva primeiro
-    if carregar_cookies():
-        print("🚀 Sessão restaurada com sucesso!")
-    elif HEADLESS:
-        print("\n🌐 Modo Online (Sem Janela) ativado.")
-        if FRESH_USER and FRESH_PASS:
-            if not fazer_login():
-                print("❌ Falha no login automático. Verifique suas senhas!")
-                # return
-            else:
-                salvar_cookies()
-        else:
-            print("⚠️ AVISO: Variáveis FRESH_USER e FRESH_PASS não encontradas.")
-            print("👉 Para rodar online, você precisa cadastrar as senhas no GitHub Secrets.")
-            print("Ou rodar no terminal: export FRESH_USER='seu-email' && export FRESH_PASS='sua-senha'")
-            return
+    # Verifica login
+    if HEADLESS:
+        print("\n🌐 Modo Headless ativado. Tentando login automático...")
+        if not fazer_login():
+            print("❌ Falha no login automático. Abortando.")
+            # return # Comentado para não quebrar se o usuário quiser testar local
     else:
-        print("\n👉 Modo com Janela (Local) ativado. Faça login manual e pressione ENTER...")
+        print("\n👉 Faça login manual e esteja na tela inicial. Pressione ENTER...")
         input()
-        salvar_cookies()
     
     # --- DIAGNÓSTICO DE IFRAME ---
     print("\n🔍 Detectando iframes...")
