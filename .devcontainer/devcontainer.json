@@ -1,0 +1,18 @@
+{
+  "name": "ROBOTINHO Online",
+  "image": "mcr.microsoft.com/devcontainers/python:3.11",
+  "features": {
+    "ghcr.io/devcontainers/features/pwa:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-ceintl.vscode-language-pack-pt-BR"
+      ]
+    }
+  },
+  "onCreateCommand": "pip install pandas gspread google-auth selenium",
+  "postCreateCommand": "sudo apt-get update && sudo apt-get install -y google-chrome-stable",
+  "remoteUser": "vscode"
+}
