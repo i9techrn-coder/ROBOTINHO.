@@ -1,9 +1,7 @@
 {
   "name": "ROBOTINHO Online",
-  "image": "mcr.microsoft.com/devcontainers/python:3.11",
-  "features": {
-    "ghcr.io/devcontainers/features/pwa:1": {}
-  },
+  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  "onCreateCommand": "pip3 install -r requirements.txt",
   "customizations": {
     "vscode": {
       "extensions": [
@@ -12,7 +10,5 @@
       ]
     }
   },
-  "onCreateCommand": "sudo apt-get update && sudo apt-get install -y wget gnupg && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add - && sudo sh -c 'echo \"deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main\" >> /etc/apt/sources.list.d/google-chrome.list' && sudo apt-get update && sudo apt-get install -y google-chrome-stable",
-  "postCreateCommand": "pip3 install -r requirements.txt",
-  "remoteUser": "vscode"
+  "remoteUser": "codespace"
 }
