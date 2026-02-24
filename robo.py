@@ -16,12 +16,10 @@ from selenium.webdriver.common.keys import Keys
 # --- CONFIGURAÇÕES DE AMBIENTE (NUVEM) ---
 FRESH_USER = os.getenv("FRESH_USER")
 FRESH_PASS = os.getenv("FRESH_PASS")
-HEADLESS = os.getenv("HEADLESS", "false").lower() == "true"
+# No Codespaces, se o usuário não disser nada, tentamos Headless (modo servidor)
+HEADLESS = os.getenv("HEADLESS", "true").lower() == "true"
 IS_CODESPACE = os.getenv("CODESPACES", "false").lower() == "true"
 GOOGLE_CREDENTIALS_JSON = os.getenv("GOOGLE_SHEETS_CREDENTIALS") # String JSON direta
-
-if IS_CODESPACE:
-    HEADLESS = True
 
 # ==============================
 # CONFIGURAÇÃO E CREDENCIAIS
@@ -463,16 +461,22 @@ def main():
     if carregar_cookies():
         print("🚀 Sessão restaurada com sucesso!")
     elif HEADLESS:
-        print("\n🌐 Modo Headless ativado. Tentando login automático...")
-        if not fazer_login():
-            print("❌ Falha no login automático. Abortando.")
-            # return
+        print("\n🌐 Modo Online (Sem Janela) ativado.")
+        if FRESH_USER and FRESH_PASS:
+            if not fazer_login():
+                print("❌ Falha no login automático. Verifique suas senhas!")
+                # return
+            else:
+                salvar_cookies()
         else:
-            salvar_cookies() # Salva se logou com sucesso
+            print("⚠️ AVISO: Variáveis FRESH_USER e FRESH_PASS não encontradas.")
+            print("👉 Para rodar online, você precisa cadastrar as senhas no GitHub Secrets.")
+            print("Ou rodar no terminal: export FRESH_USER='seu-email' && export FRESH_PASS='sua-senha'")
+            return
     else:
-        print("\n👉 Faça login manual. Após logar, pressione ENTER aqui...")
+        print("\n👉 Modo com Janela (Local) ativado. Faça login manual e pressione ENTER...")
         input()
-        salvar_cookies() # Salva o login feito manualmente
+        salvar_cookies()
     
     # --- DIAGNÓSTICO DE IFRAME ---
     print("\n🔍 Detectando iframes...")
