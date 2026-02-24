@@ -1,0 +1,17 @@
+# Google Credentials
+credenciais.json
+*.json
+
+# Chrome Profiles
+profile/
+chrome-profile/
+chrome_profile/
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# OS Files
+.DS_Store
+Thumbs.db

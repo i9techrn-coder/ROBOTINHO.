@@ -1,0 +1,169 @@
+boa noite ,   ta vendo esse codigi do robo.
+
+no resumo to precisando de um robo pra abrir e fechar os chamados pra mim ,
+
+vc acha que esse caminho é o melhor cenário ?  
+
+mas resumindo vou desenhar mais aqui pra vc
+
+
+1° eu vou usaro google forms pra responder 3 perguntas na ponta
+https://docs.google.com/forms/d/1AI7YctGF94gOxgIWx-M8LsraLhfvmxjYS12ZH0aBQgo/edit
+LOCALIDADE - ISSO EU IRFORMO A UNIDADE PRA QUAL EU TO ABRINDO O CHAMADO
+DESCRIÇÃO  -  ISSO A DESCRIÇÃO DO CHAMADO
+SOLICITANTE - ESSE É O EMAIL DO SOLICITANTE DO CHAMADO
+
+2° APÓS PREENCHER O FORMS , ele joga esses dados em uma planilha no google.
+https://docs.google.com/spreadsheets/d/1ukIGDUSIobMlI-nLRjmBdLIt9ftWkncW4_Xl6u5SdpA/edit?gid=1783851616#gid=1783851616
+essa planilha tem um papel muito importante, pois nela fica os campos que eu preenchi no forms e mais duas colunas que contem o campo CHAMADO E STATUS DO CHAMADO.
+no campo chamado, eu preciso que ao abrir o chamado o robo add o numero do chamado ali 
+e no campo status do chamado eu preciso que o robo coloque "chamado resolvido"  quando fechar o chamado.
+
+3° quando eu preencher o forms com todos os chamados eu quero dar um play na aplicação e isso eu posso fazer de forma manual
+e após eu preciso que o robo acesse o site de abertura de chamados:
+https://grupofleury.freshservice.com/support/catalog/items/42
+e preencha os seguintes campos
+"melhor_horario": "Comercial (08h00 as 17h48)",
+    "telefone": "84 997080020",
+    "ambiente": "Fleury",
+    "equipamento": "Equipamento Desktop",
+    "tipo": "Configuração",
+    "patrimonio": "*",
+    "maquina": "*"
+esses campos vão ser sempre assim, pra todos os chamados abertos , eu só preciso add 3 coisas que são justamente aquelas que eu preenchi no forms e esta la na planilha do google.
+  localidade = str(row["LOCALIDADE"]).strip()
+ descricao = str(row["DESCRICAO"]).strip()
+    email = str(row["SOLICITANTE"]).strip()
+
+no codigo do robo, ja tem as HTML pra vc preeencher de tudo ,  mas isso seria só pra abertura do chamado.
+após o robo preencher o chamado eu preciso tb que ele feche, vamos fazer o passo a passo pro fechamento:
+
+1° na tela aonde ele abrir o chamado vai ter um campo pesquisar, que ele vai colar justamente o numero do chamado sem a "#" para procurar o chamado.
+2° entrar no chamado
+3° preencher a o campo resolução com o texto padrão
+Resolvido conforme solicitado, para qualquer dúvida entre em contato no telefone 84 997080020
+e clicar em "guardar" pra salvar o texto
+4° preencher os campos ,  agente, estado, códido de resolução , tipo de atendimento e clicar em atulizar pra fechar o chamado
+5° após clicar, preciso que o robo vá na planilha e coloque na coluna do "status do chamado" a frase "chamado resolvido" 
+
+e pronto rs , finalizado o processo,  mas quero que ao eu dar o play ele busque um a um e abra o chamado e feche
+  
+
+eu ja criei as credencias na api do google e deixei salva no meu C:\robo\
+
+vou deixar alguns prints pra facilitar o entendimento.
+
+
+melhor horario:
+<input type="text" class="search-select ellipsis required autocomplete_field" placeholder="Insira 2 ou mais carateres" role="combobox" aria-autocomplete="list" aria-haspopup="true" aria-expanded="false" aria-controls="options-container-849" aria-owns="options-container-849" autocapitalize="off" autocomplete="off" autocorrect="off" aria-label="escreva Abrir opções Melhor horário para contato*" id="requested_item_values_42_requested_item_value_attributes_cf_melhor_horario_para_contato_656425" name="lookup-field-requested_item_values_42_requested_item_value_attributes_cf_melhor_horario_para_contato_656425-849" aria-required="true">
+
+telefone:
+<input type="text" autocomplete="off" class="field text required" aria-required="true" placeholder="" name="requested_item_values[42][requested_item_value_attributes][cf_telefone_alternativo_656425]" id="42_c6df222f-d82c-443e-90f9-a22d163d6c1c" data-field-name="42~cf_telefone_alternativo_656425">
+
+localidade:
+<input type="text" class="search-select ellipsis " placeholder="Pesquisar" role="combobox" aria-autocomplete="list" aria-haspopup="true" aria-expanded="false" aria-controls="options-container-850" aria-owns="options-container-850" autocapitalize="off" autocomplete="off" autocorrect="off" aria-hidden="true" tabindex="-1" aria-required="true" required="" aria-label="escreva Abrir opções Localidade*" aria-activedescendant="power-select-option-850-">
+
+ambiente:
+<input type="text" class="search-select ellipsis " placeholder="Pesquisar" role="combobox" aria-autocomplete="list" aria-haspopup="true" aria-expanded="false" aria-controls="options-container-851" aria-owns="options-container-851" autocapitalize="off" autocomplete="off" autocorrect="off" aria-hidden="true" tabindex="-1" aria-required="true" required="" aria-label="escreva Abrir opções Ambiente*" aria-activedescendant="power-select-option-851-">
+
+ambiente:
+<input type="text" class="search-select ellipsis " placeholder="Pesquisar" role="combobox" aria-autocomplete="list" aria-haspopup="true" aria-expanded="false" aria-controls="options-container-852" aria-owns="options-container-852" autocapitalize="off" autocomplete="off" autocorrect="off" aria-hidden="true" tabindex="-1" aria-required="true" required="" aria-label="escreva Abrir opções Equipamento*" aria-activedescendant="power-select-option-852-">
+
+equipamento:
+<input type="text" class="search-select ellipsis " placeholder="Pesquisar" role="combobox" aria-autocomplete="list" aria-haspopup="true" aria-expanded="false" aria-controls="options-container-852" aria-owns="options-container-852" autocapitalize="off" autocomplete="off" autocorrect="off" aria-hidden="true" tabindex="-1" aria-required="true" required="" aria-label="escreva Abrir opções Equipamento*" aria-activedescendant="power-select-option-852-">
+
+tipo de solicitação:
+<input type="text" class="search-select ellipsis " placeholder="Pesquisar" role="combobox" aria-autocomplete="list" aria-haspopup="true" aria-expanded="false" aria-controls="options-container-853" aria-owns="options-container-853" autocapitalize="off" autocomplete="off" autocorrect="off" aria-hidden="true" tabindex="-1" aria-required="true" required="" aria-label="escreva Abrir opções Tipo de Solicitacão*" aria-activedescendant="power-select-option-853-">
+
+descrição:
+<textarea autocomplete="off" class="paragraph required" rows="5" aria-required="true" placeholder="" name="requested_item_values[42][requested_item_value_attributes][cf_descricao_656425]" id="42_d6aef9f4-4a55-4380-a693-551a5f03ebc3" data-field-name="42~cf_descricao_656425"></textarea>
+
+numero de patrimonio e service tag:
+<input type="text" autocomplete="off" class="field text required" aria-required="true" placeholder="" name="requested_item_values[42][requested_item_value_attributes][cf_numero_patromonio_656425]" id="42_32ce8dec-c1de-444d-9f01-aa93aa6bfd72" data-field-name="42~cf_numero_patromonio_656425">
+
+nome da maquina:
+<input type="text" autocomplete="off" class="field text required" aria-required="true" placeholder="" name="requested_item_values[42][requested_item_value_attributes][cf_nome_maquina_656425]" id="42_e4713da8-6469-46d2-ae18-91196e91d1f8" data-field-name="42~cf_nome_maquina_656425">
+
+descrição:
+<textarea autocomplete="off" class="paragraph required" rows="5" aria-required="true" placeholder="" name="requested_item_values[42][requested_item_value_attributes][cf_descricao_656425]" id="42_d6aef9f4-4a55-4380-a693-551a5f03ebc3" data-field-name="42~cf_descricao_656425"></textarea>
+
+enviar pedido:
+<input type="button" class="btn btn-primary place-request-btn" value="Fazer pedido">
+
+solicitante:
+<input type="text" class="search-select ellipsis required email" placeholder="E-mail" role="combobox" aria-autocomplete="list" aria-haspopup="true" aria-expanded="false" aria-controls="options-container-303" aria-owns="options-container-303" autocapitalize="off" autocomplete="off" autocorrect="off" id="requester_email" name="requester_email" aria-required="true" aria-invalid="false">
+
+confirmar:
+<button id="confirm-request" class="btn btn-primary place-confirm">Confirmar</button>
+
+
+
+
+
+
+
+-------------------
+
+
+
+pegar o numero do chamado e colar
+<span class=" breadcrumb-item" data-test-id="ticket-human-display-id" data-ellipsis-tooltip="#SR-1133844">
+			#SR-1133844
+		</span>
+copiar o chamado sem a "#"   (SR-1133844) essa numeração vai variar de chamado pra chamado
+depois que copiar ,  colar esse numero do chamado na planilha 
+https://docs.google.com/spreadsheets/d/1ukIGDUSIobMlI-nLRjmBdLIt9ftWkncW4_Xl6u5SdpA/edit?gid=1783851616#gid=1783851616
+na coluna E (CHAMADO)
+
+
+depois na mesma tela que ficou aberta ao final da abertura do chamado , clicar em pesquisar e colar o numero de chamado que copiou
+PEQUISAR
+<input type="text" class="modern-ui-search-input" value="" id="header_search" autocomplete="off" name="term" placeholder="Pesquisar" data-url="/search/home/suggest" data-keybinding="/" aria-label="Procurar tickets, tarefas ou palavras-chave">
+E COLA O NUMERO DO CHAMADO
+
+DEPOIS CLICAR NO CHAMADO PRA ABRIR O CHAMADO
+<a href="/helpdesk/tickets/1133844" class="search-title">
+						Instalação / Configuração de Desktop  <span class="muted">#SR-1133844</span>
+					</a>
+
+
+
+SELECIONAR O "AGENTE"
+<input class="ember-power-select-search-input ember-power-select-search-input-trigger has-inline-search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-id="ember-power-select-search-input-trigger-ember184" id="ember178_responderId" aria-controls="ember-power-select-options-ember184" aria-autocomplete="list" placeholder="--" aria-expanded="false" aria-describedby="ember181" role="combobox" type="search">
+E ESCOLHE SEMPRE  "PAULO RICARDO DA SILVA SOARES" 
+
+DEPOIS ESCOLHER O ESTADO
+<input class="ember-power-select-search-input ember-power-select-search-input-trigger has-inline-search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-id="ember-power-select-search-input-trigger-ember94" id="ember88_status" aria-controls="ember-power-select-options-ember94" aria-autocomplete="list" placeholder="Selecionar" aria-expanded="false" aria-describedby="ember91" aria-required="true" role="combobox" type="search">
+escolher sempre "Resolvido"
+
+depois clicar em "codigo da resolução" 
+<span class="ember-power-select-selected-item has-clear">        Resolvido Com Sucesso
+
+</span>
+
+<!---->
+  <span class="ember-power-select-status-icon" role="presentation"></span>
+</div>
+e escolher "Resolvido Com Sucesso"
+
+ "Tipo de Atendimento"
+<span class="ember-power-select-selected-item has-clear">        Unidade Base
+
+</span>
+
+<!---->
+  <span class="ember-power-select-status-icon" role="presentation"></span>
+</div>
+e escolher sempre "Unidade Base"
+
+depois clicar em "atualizar" pra fechar o chamado
+<button default="Submit" object="&lt;freshservice@model:ticket::ember302:1133844&gt;" id="form-submit" class="async-button form-button--submit ember-view btn btn-primary form-submit-btn property-update-btn " data-test-id="ticket-property-form-submit" type="submit">  
+<!---->														<span>Atualizar</span>
+													
+</button>
+
+e ao final escrever na planilha "Chamado Resolvido"
+<button default="Submit" object="&lt;freshservice@model:ticket::ember302:1133844&gt;" id="form-submit" class="async-button form-button--submit ember-view btn btn-primary form-submit-btn property-update-btn " data-test-id="ticket-property-form-submit" type="submit">  
+<!---->														<span>Atualizar</span>
+													
+</button>

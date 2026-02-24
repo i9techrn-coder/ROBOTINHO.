@@ -1,0 +1,34 @@
+name: Freshservice Ticket Automation
+
+on:
+  schedule:
+    - cron: '0 15,21 * * *' # 12h e 18h no horário de Brasília (UTC-3)
+  workflow_dispatch: # Permite rodar manualmente pelo site do GitHub
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python_version: '3.10'
+
+      - name: Install Dependencies
+        run: |
+          pip install pandas gspread google-auth selenium webdriver-manager
+
+      - name: Run Robot
+        env:
+          FRESH_USER: ${{ secrets.FRESH_USER }}
+          FRESH_PASS: ${{ secrets.FRESH_PASS }}
+          GOOGLE_SHEETS_CREDENTIALS: ${{ secrets.GOOGLE_SHEETS_CREDENTIALS }}
+          HEADLESS: "true"
+        run: |
+          # O script precisará ler as credenciais do Google de uma variável de ambiente
+          # Vamos salvar o segredo em um arquivo temporário
+          echo "$GOOGLE_SHEETS_CREDENTIALS" > credentials.json
+          python robo.py
