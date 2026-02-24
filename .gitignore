@@ -2,6 +2,9 @@
 credenciais.json
 *.json
 
+# Allow Codespaces
+!.devcontainer/
+
 # Chrome Profiles
 profile/
 chrome-profile/
