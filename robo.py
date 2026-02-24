@@ -17,6 +17,10 @@ from selenium.webdriver.common.keys import Keys
 FRESH_USER = os.getenv("FRESH_USER")
 FRESH_PASS = os.getenv("FRESH_PASS")
 HEADLESS = os.getenv("HEADLESS", "false").lower() == "true"
+IS_CODESPACE = os.getenv("CODESPACES", "false").lower() == "true"
+
+if IS_CODESPACE:
+    HEADLESS = True  # Codespace sempre roda headless por padrão no backend
 
 # ==============================
 # CONFIGURAÇÃO E CREDENCIAIS
