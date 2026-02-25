@@ -15,6 +15,10 @@ from selenium.webdriver.common.keys import Keys
 # Detecção inteligente de ambiente
 IS_CODESPACE = os.getenv("CODESPACES", "false").lower() == "true"
 
+# Variáveis de Login (Online)
+FRESH_USER = os.getenv("FRESH_USER")
+FRESH_PASS = os.getenv("FRESH_PASS")
+
 # No Windows (local), o padrão agora é VER a tela (false)
 # No Codespaces (nuvem), o padrão é OCULTO (true)
 default_headless = "true" if IS_CODESPACE else "false"
