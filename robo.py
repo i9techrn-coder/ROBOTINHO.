@@ -135,6 +135,34 @@ def fazer_login():
         print(f"❌ Erro login: {e}")
         return False
 
+def salvar_cookies():
+    """Salva os cookies atuais em um arquivo para reutilização."""
+    try:
+        with open("cookies.pkl", "wb") as f:
+            import pickle
+            pickle.dump(driver.get_cookies(), f)
+        print("✅ Sessão salva em cookies.pkl!")
+    except Exception as e:
+        print(f"❌ Erro ao salvar cookies: {e}")
+
+def carregar_cookies():
+    """Tenta carregar cookies salvos para pular o login."""
+    if not os.path.exists("cookies.pkl"):
+        return False
+    try:
+        driver.get("https://grupofleury.freshservice.com/")
+        with open("cookies.pkl", "rb") as f:
+            import pickle
+            cookies = pickle.load(f)
+            for cookie in cookies:
+                driver.add_cookie(cookie)
+        driver.refresh()
+        time.sleep(5)
+        return "dashboard" in driver.current_url.lower() or "tickets" in driver.current_url.lower()
+    except Exception as e:
+        print(f"⚠️ Erro ao carregar cookies: {e}")
+        return False
+
 def js_find(css_selector, timeout=30):
     """Busca elemento no contexto atual, default e em iframes recursivamente."""
     start_time = time.time()
