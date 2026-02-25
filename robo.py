@@ -460,15 +460,21 @@ def fase_c_reforco(ticket_id):
 # ==============================
 
 def main():
-    # Verifica login
-    if HEADLESS:
-        print("\n🌐 Modo Headless ativado. Tentando login automático...")
-        if not fazer_login():
-            print("❌ Falha no login automático. Abortando.")
-            # return # Comentado para não quebrar se o usuário quiser testar local
+    print("🚀 Iniciando processamento...")
+
+    # Tenta usar sessão anterior (cookies)
+    if carregar_cookies():
+        print("✨ Sessão restaurada com sucesso!")
     else:
-        print("\n👉 Faça login manual e esteja na tela inicial. Pressione ENTER...")
-        input()
+        print("🔑 Login manual ou automático necessário...")
+        if not fazer_login():
+            if HEADLESS:
+                print("❌ Falha no login automático e impossível interagir (Modo Headless).")
+                return
+            else:
+                print("👋 Aguardando você fazer o login manualmente no navegador...")
+                input("👉 Após logar e estiver na tela de chamados, aperte ENTER aqui para continuar...")
+                salvar_cookies()
     
     # --- DIAGNÓSTICO DE IFRAME ---
     print("\n🔍 Detectando iframes...")
