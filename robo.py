@@ -12,13 +12,13 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 
-# --- CONFIGURAÇÕES DE AMBIENTE (NUVEM) ---
-FRESH_USER = os.getenv("FRESH_USER")
-FRESH_PASS = os.getenv("FRESH_PASS")
-# No Codespaces, se o usuário não disser nada, tentamos Headless (modo servidor)
-# Mas se quiser VER a tela no VNC, basta rodar: export HEADLESS='false'
-HEADLESS = os.getenv("HEADLESS", "true").lower() == "true"
+# Detecção inteligente de ambiente
 IS_CODESPACE = os.getenv("CODESPACES", "false").lower() == "true"
+
+# No Windows (local), o padrão agora é VER a tela (false)
+# No Codespaces (nuvem), o padrão é OCULTO (true)
+default_headless = "true" if IS_CODESPACE else "false"
+HEADLESS = os.getenv("HEADLESS", default_headless).lower() == "true"
 
 # ==============================
 # CONFIGURAÇÃO E CREDENCIAIS
@@ -76,7 +76,7 @@ else:
     options.add_argument("--disable-dev-shm-usage")
 
 # Opções extras de estabilidade e Stealth (Esconder que é robô)
-options.add_argument("--remote-debugging-port=9222")
+# Removida porta 9222 para evitar conflito de "SessionNotCreated" no Windows
 options.add_argument("--disable-blink-features=AutomationControlled")
 
 # User-Agent real de Windows para enganar a Microsoft
