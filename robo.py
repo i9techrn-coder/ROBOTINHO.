@@ -78,17 +78,26 @@ else:
 # Opções extras de estabilidade e Stealth (Esconder que é robô)
 options.add_argument("--remote-debugging-port=9222")
 options.add_argument("--disable-blink-features=AutomationControlled")
+
+# User-Agent real de Windows para enganar a Microsoft
+options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36")
+
 options.add_experimental_option("excludeSwitches", ["enable-automation"])
 options.add_experimental_option("useAutomationExtension", False)
 
+# Desativa detecção de 'blink' e outras marcas de teste
+options.add_argument("--disable-infobars")
+options.add_argument("--disable-browser-side-navigation")
+
 driver = webdriver.Chrome(options=options)
 
-# Injeção de Script para remover o flag de WebDriver do navegador
+# Injeção de Script para remover o flag de WebDriver e forçar identidade de Windows
 driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
   "source": """
-    Object.defineProperty(navigator, 'webdriver', {
-      get: () => undefined
-    })
+    Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
+    window.chrome = { runtime: {} };
+    Object.defineProperty(navigator, 'languages', { get: () => ['pt-BR', 'pt', 'en-US', 'en'] });
+    Object.defineProperty(navigator, 'plugins', { get: () => [1, 2, 3, 4, 5] });
   """
 })
 
