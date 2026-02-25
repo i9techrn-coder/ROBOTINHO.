@@ -147,7 +147,7 @@ def safe_click_js(css_selector):
     """Clica usando JS puro."""
     el = js_find(css_selector)
     driver.execute_script("arguments[0].scrollIntoView({block:'center'});", el)
-    time.sleep(0.3)
+    time.sleep(0.5 if not IS_CODESPACE else 1.5) # Adiciona espera extra se IS_CODESPACE
     driver.execute_script("arguments[0].click();", el)
 
 def preencher_por_id(field_id, value):
