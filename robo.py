@@ -75,11 +75,24 @@ else:
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
 
-# Opções extras de estabilidade
+# Opções extras de estabilidade e Stealth (Esconder que é robô)
 options.add_argument("--remote-debugging-port=9222")
+options.add_argument("--disable-blink-features=AutomationControlled")
+options.add_experimental_option("excludeSwitches", ["enable-automation"])
+options.add_experimental_option("useAutomationExtension", False)
 
 driver = webdriver.Chrome(options=options)
-wait = WebDriverWait(driver, 20)
+
+# Injeção de Script para remover o flag de WebDriver do navegador
+driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
+  "source": """
+    Object.defineProperty(navigator, 'webdriver', {
+      get: () => undefined
+    })
+  """
+})
+
+wait = WebDriverWait(driver, 30)
 
 # ==============================
 # "BYPASS" HELPERS (Pula Selenium find_element que crasha)
