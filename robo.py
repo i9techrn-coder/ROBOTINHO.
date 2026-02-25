@@ -113,7 +113,7 @@ def fazer_login():
         print(f"❌ Erro login: {e}")
         return False
 
-def js_find(css_selector, timeout=15):
+def js_find(css_selector, timeout=30):
     """Busca elemento no contexto atual, default e em iframes recursivamente."""
     start_time = time.time()
     while time.time() - start_time < timeout:
@@ -147,7 +147,7 @@ def safe_click_js(css_selector):
     """Clica usando JS puro."""
     el = js_find(css_selector)
     driver.execute_script("arguments[0].scrollIntoView({block:'center'});", el)
-    time.sleep(0.5 if not IS_CODESPACE else 1.5) # Adiciona espera extra se IS_CODESPACE
+    time.sleep(1.0 if not IS_CODESPACE else 2.5) # Mais tempo na nuvem
     driver.execute_script("arguments[0].click();", el)
 
 def preencher_por_id(field_id, value):
